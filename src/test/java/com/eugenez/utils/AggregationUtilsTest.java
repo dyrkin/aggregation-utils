@@ -1,6 +1,5 @@
 package com.eugenez.utils;
 
-import com.eugenez.utils.AggregationUtils;
 import com.eugenez.utils.exception.AggregationException;
 import org.junit.Test;
 
@@ -20,41 +19,55 @@ public class AggregationUtilsTest {
     @Test
     public void testSinglethredSum() throws AggregationException {
 
-        List<TestClass> list = new ArrayList<TestClass>() {{
-            add(new TestClass(5, 10, "Hello", 1));
-            add(new TestClass(5, 12, " World! ", 1));
-            add(new TestClass(5, 11, "Wassup!", 1));
+        List<SomeClass> list = new ArrayList<SomeClass>() {{
+            add(new SomeClass(5, 10, "Hello", 1));
+            add(new SomeClass(5, 12, " World! ", 1));
+            add(new SomeClass(5, 11, "Wassup!", 1));
         }};
 
-        assertEquals(Integer.valueOf(15), AggregationUtils.sum(list, m(TestClass.class).getIntV()));
-        assertEquals(Double.valueOf(33), AggregationUtils.sum(list, m(TestClass.class).getDouV()));
-        assertEquals("Hello World! Wassup!", AggregationUtils.sum(list, m(TestClass.class).getStrV()));
+        assertEquals(Integer.valueOf(15), AggregationUtils.sum(list, m(SomeClass.class).getIntV()));
+        assertEquals(Double.valueOf(33), AggregationUtils.sum(list, m(SomeClass.class).getDouV()));
+        assertEquals("Hello World! Wassup!", AggregationUtils.sum(list, m(SomeClass.class).getStrV()));
 
+
+        AggregationUtils.sum(list, new ValueGetter<SomeClass, Integer>() {
+            public Integer getValue(SomeClass object) {
+                return object.getIntV();
+            }
+        });
+
+
+
+
+    }
+
+    interface ValueGetter<C,T>{
+        T getValue(C object);
     }
 
 
     @Test
     public void testSinglethredCallHierarchySum() throws AggregationException {
 
-        List<TestClass> list = new ArrayList<TestClass>() {{
-            add(new TestClass().setSomeOtherClass(new TestClass.SomeOtherClass(12)));
-            add(new TestClass().setSomeOtherClass(new TestClass.SomeOtherClass(13)));
-            add(new TestClass().setSomeOtherClass(new TestClass.SomeOtherClass(14)));
+        List<SomeClass> list = new ArrayList<SomeClass>() {{
+            add(new SomeClass().setSomeOtherClass(new SomeClass.SomeOtherClass(12)));
+            add(new SomeClass().setSomeOtherClass(new SomeClass.SomeOtherClass(13)));
+            add(new SomeClass().setSomeOtherClass(new SomeClass.SomeOtherClass(14)));
         }};
 
-        assertEquals(Integer.valueOf(39), AggregationUtils.sum(list, m(TestClass.class).getSomeOtherClass().getIntValue()));
+        assertEquals(Integer.valueOf(39), AggregationUtils.sum(list, m(SomeClass.class).getSomeOtherClass().getIntValue()));
     }
 
     @Test
     public void testSinglethredCallHierarchyCollectionSum() throws AggregationException {
 
-        List<TestClass> list = new ArrayList<TestClass>() {{
-            add(new TestClass().addValToCollection(12));
-            add(new TestClass().addValToCollection(13));
-            add(new TestClass().addValToCollection(14));
+        List<SomeClass> list = new ArrayList<SomeClass>() {{
+            add(new SomeClass().addValToCollection(12));
+            add(new SomeClass().addValToCollection(13));
+            add(new SomeClass().addValToCollection(14));
         }};
 
-        assertEquals(Integer.valueOf(39), AggregationUtils.sum(list, m(TestClass.class).getCollection().get(0)));
+        assertEquals(Integer.valueOf(39), AggregationUtils.sum(list, m(SomeClass.class).getCollection().get(0)));
     }
 
     @Test
@@ -84,7 +97,7 @@ public class AggregationUtilsTest {
         int expectedIntSum = 0;
         double expectedDoubleSum = 0.;
         StringBuilder expectedStringSum = new StringBuilder();
-        List<TestClass> list;
+        List<SomeClass> list;
 
         ExpectedValue expectedValue;
 
@@ -94,14 +107,14 @@ public class AggregationUtilsTest {
 
         private void prepareData() {
             Random r = new Random();
-            list = new ArrayList<TestClass>();
+            list = new ArrayList<SomeClass>();
             for (int z = 0; z < 100; z++) {
                 //generate random values
                 int randomInt = r.nextInt(100);
                 double randomDouble = r.nextDouble() * 100;
                 String randomString = UUID.randomUUID().toString().substring(1, 2);
 
-                list.add(new TestClass(randomInt, randomDouble, randomString, randomInt));
+                list.add(new SomeClass(randomInt, randomDouble, randomString, randomInt));
 
                 expectedIntSum += randomInt;
                 expectedDoubleSum += randomDouble;
@@ -111,10 +124,10 @@ public class AggregationUtilsTest {
         }
 
         public ExpectedValue call() throws Exception {
-            expectedValue.setActualInt(AggregationUtils.sum(list, m(TestClass.class).getIntV()));
-            expectedValue.setActualDouble(AggregationUtils.sum(list, m(TestClass.class).getDouV()));
-            expectedValue.setActualString(AggregationUtils.sum(list, m(TestClass.class).getStrV()));
-            expectedValue.setActualSomeOtherClassInt(AggregationUtils.sum(list, m(TestClass.class).getSomeOtherClass().getIntValue()));
+            expectedValue.setActualInt(AggregationUtils.sum(list, m(SomeClass.class).getIntV()));
+            expectedValue.setActualDouble(AggregationUtils.sum(list, m(SomeClass.class).getDouV()));
+            expectedValue.setActualString(AggregationUtils.sum(list, m(SomeClass.class).getStrV()));
+            expectedValue.setActualSomeOtherClassInt(AggregationUtils.sum(list, m(SomeClass.class).getSomeOtherClass().getIntValue()));
             return expectedValue;
         }
     }
@@ -185,7 +198,7 @@ public class AggregationUtilsTest {
         }
     }
 
-    public static class TestClass {
+    public static class SomeClass {
 
         private int intV;
 
@@ -197,10 +210,10 @@ public class AggregationUtilsTest {
 
         private List<Integer> collection = new ArrayList<Integer>();
 
-        public TestClass() {
+        public SomeClass() {
         }
 
-        public TestClass(int intV, double douV, String strV, int someOtherClassInt) {
+        public SomeClass(int intV, double douV, String strV, int someOtherClassInt) {
             this.intV = intV;
             this.douV = douV;
             this.strV = strV;
@@ -223,7 +236,7 @@ public class AggregationUtilsTest {
             return someOtherClass;
         }
 
-        private TestClass addValToCollection(Integer val) {
+        private SomeClass addValToCollection(Integer val) {
             collection.add(val);
             return this;
         }
@@ -232,7 +245,7 @@ public class AggregationUtilsTest {
             return collection;
         }
 
-        public TestClass setSomeOtherClass(SomeOtherClass someOtherClass) {
+        public SomeClass setSomeOtherClass(SomeOtherClass someOtherClass) {
             this.someOtherClass = someOtherClass;
             return this;
         }
