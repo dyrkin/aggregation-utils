@@ -8,6 +8,7 @@ import com.eugenez.utils.sum.SumFactory;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
+import java.util.Iterator;
 
 /**
  * @author eugene zadyra
@@ -73,7 +74,17 @@ public class AggregationUtils {
         if (methodEntry.getPreviousMethod() != null) {
             potentialResult = hierarchyCall(element, methodEntry.getPreviousMethod());
         }
-         return methodEntry.getMethod().invoke(potentialResult, methodEntry.getArgs());
+        if (potentialResult instanceof Iterable && methodEntry.getMethod().getName().equals("get")
+                && methodEntry.getArgs() != null && methodEntry.getArgs().length == 1
+                && (Integer) methodEntry.getArgs()[0] == -1) {
+            Iterator iterator = ((Iterable)potentialResult).iterator();
+            int i=0;
+            while (iterator.hasNext()){
+
+                i++;
+            }
+        }
+        return methodEntry.getMethod().invoke(potentialResult, methodEntry.getArgs());
     }
 
     private static Class<?> getMethodReturnType(MethodEntry methodEntry) {

@@ -32,6 +32,14 @@ You can also do hierarchy calls:
 AggregationUtils.sum(list, m(SomeClass.class).getSomeOtherClass().getIntegerValue());
 ````
 
+For every element in the list call `getCollectionElements()` method which returns the collection of `CollectionElement.class` objects. 
+Get first element from collection and call the method `getIntegerValue()` and summarize result:
+
+```java
+AggregationUtils.sum(list, m(ClassWithCollection.class).getCollectionElements().get(0).getIntegerValue());
+````
+
+
 The aggregation funtions supported:
 
 - `sum` - the sum of the return results from the specified method of the collection elements(supported datatypes: `Integer`, `Double`, `Float`, `String`)
