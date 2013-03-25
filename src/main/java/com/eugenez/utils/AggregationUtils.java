@@ -58,7 +58,10 @@ public class AggregationUtils {
     private static <Z> Z aggregate(Collection<?> collection, Aggregator<Z> aggregator, MethodEntry methodEntry) throws AggregationException {
         for (Object element : collection) {
             try {
-                aggregator.add((Z) hierarchyCall(element, methodEntry));
+                Z result = (Z) hierarchyCall(element, methodEntry, aggregator);
+                if (result != null) {
+                    aggregator.add(result);
+                }
             } catch (IllegalAccessException e) {
                 throw new AggregationException("Error occurred", e);
             } catch (InvocationTargetException e) {
@@ -68,32 +71,48 @@ public class AggregationUtils {
         return aggregator.getResult();
     }
 
-    private static Object hierarchyCall(Object element, MethodEntry methodEntry) throws IllegalAccessException, InvocationTargetException {
-
-        Object potentialResult = element;
-        if (methodEntry.getPreviousMethod() != null) {
-            potentialResult = hierarchyCall(element, methodEntry.getPreviousMethod());
-        }
-        if (potentialResult instanceof Iterable && methodEntry.getMethod().getName().equals("get")
+    private static Object hierarchyCall(Object element, MethodEntry methodEntry, Aggregator aggregator) throws IllegalAccessException, InvocationTargetException {
+        if (element instanceof Iterable && methodEntry.getMethod().getName().equals("get")
                 && methodEntry.getArgs() != null && methodEntry.getArgs().length == 1
                 && (Integer) methodEntry.getArgs()[0] == -1) {
-            Iterator iterator = ((Iterable)potentialResult).iterator();
-            int i=0;
-            while (iterator.hasNext()){
-
+            Iterator iterator = ((Iterable) element).iterator();
+            int i = 0;
+            while (iterator.hasNext()) {
+                MethodEntry entry = new MethodEntry(methodEntry.getMethod(), new Object[]{i});
+                entry.setReturnType(methodEntry.getReturnType());
+                entry.setNextMethodEntry(methodEntry.getNextMethodEntry());
+                aggregator.add(hierarchyCall(element, entry, aggregator));
+                iterator.next();
                 i++;
             }
+            return null;
+        } else {
+            Object potentialResult = methodEntry.getMethod().invoke(element, methodEntry.getArgs());
+            if (methodEntry.getNextMethodEntry() != null) {
+                return hierarchyCall(potentialResult, methodEntry.getNextMethodEntry(), aggregator);
+            }
+            return potentialResult;
         }
-        return methodEntry.getMethod().invoke(potentialResult, methodEntry.getArgs());
     }
 
     private static Class<?> getMethodReturnType(MethodEntry methodEntry) {
+        if (methodEntry.getNextMethodEntry() != null) {
+            return getMethodReturnType(methodEntry.getNextMethodEntry());
+        }
         return methodEntry.getReturnType();
     }
 
     private static MethodEntry getAndResetInvokedMethod() {
-        MethodEntry method = MethodMagic.invokedMethodHierarchy.get();
+        MethodEntry methodEntry = MethodMagic.invokedMethodHierarchy.get();
         MethodMagic.invokedMethodHierarchy.set(null);
-        return method;
+
+        return getBootomEntry(methodEntry);
+    }
+
+    private static MethodEntry getBootomEntry(MethodEntry methodEntry) {
+        if (methodEntry.getPreviousMethod() != null) {
+            return getBootomEntry(methodEntry.getPreviousMethod());
+        }
+        return methodEntry;
     }
 }

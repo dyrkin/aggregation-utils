@@ -39,6 +39,25 @@ Get first element from collection and call the method `getIntegerValue()` and su
 AggregationUtils.sum(list, m(ClassWithCollection.class).getCollectionElements().get(0).getIntegerValue());
 ````
 
+**Nested collection magic**
+Instead of:
+```java
+int sum=0;
+for(ClassWithCollection classWithCollection: list){
+    if(classWithCollection.getCollectionElements()!=null){
+        for(ClassWithCollection.CollectionElement collectionElement: classWithCollection.getCollectionElements()){
+            sum+=collectionElement.getIntegerValue();
+        }
+    }
+}
+````
+
+You can just write(specifing element index = `-1`):
+```java
+AggregationUtils.sum(list, m(ClassWithCollection.class).getCollectionElements().get(-1).getIntegerValue())
+````
+
+Aggregation utility will go though all element in `getCollectionElements()` collection.
 
 The aggregation funtions supported:
 

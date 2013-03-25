@@ -268,6 +268,30 @@ public class AggregationUtilsTest {
     }
 
 
+    @Test
+    public void testSinglethredCallSum3() throws AggregationException {
+
+        List<ClassWithCollection> list = new ArrayList<ClassWithCollection>() {{
+            add(new ClassWithCollection(new ClassWithCollection.CollectionElement(12),
+                    new ClassWithCollection.CollectionElement(12),
+                    new ClassWithCollection.CollectionElement(15)));
+            add(new ClassWithCollection(new ClassWithCollection.CollectionElement(13)));
+            add(new ClassWithCollection(new ClassWithCollection.CollectionElement(14)));
+        }};
+
+        assertEquals(Integer.valueOf(66), AggregationUtils.sum(list, m(ClassWithCollection.class).getCollectionElements().get(-1).getIntegerValue()));
+
+        int sum=0;
+        for(ClassWithCollection classWithCollection: list){
+            if(classWithCollection.getCollectionElements()!=null){
+                for(ClassWithCollection.CollectionElement collectionElement: classWithCollection.getCollectionElements()){
+                    sum+=collectionElement.getIntegerValue();
+                }
+            }
+        }
+    }
+
+
     public static class ClassWithCollection {
         private List<CollectionElement> collectionElements;
 

@@ -80,6 +80,9 @@ public class MethodMagic {
             MethodEntry methodEntry = new MethodEntry(method, args);
             methodEntry.setReturnType(getActualReturnType(method, object));
             methodEntry.setPreviousMethod(previousMethodEntry);
+            if (previousMethodEntry != null) {
+                methodEntry.getPreviousMethod().setNextMethodEntry(methodEntry);
+            }
             return methodEntry;
         }
     }
