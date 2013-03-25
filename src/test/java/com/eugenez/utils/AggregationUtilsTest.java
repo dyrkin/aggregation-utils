@@ -29,16 +29,6 @@ public class AggregationUtilsTest {
         assertEquals(Double.valueOf(33), AggregationUtils.sum(list, m(SomeClass.class).getDouV()));
         assertEquals("Hello World! Wassup!", AggregationUtils.sum(list, m(SomeClass.class).getStrV()));
 
-
-        AggregationUtils.sum(list, new ValueGetter<SomeClass, Integer>() {
-            public Integer getValue(SomeClass object) {
-                return object.getIntV();
-            }
-        });
-
-
-
-
     }
 
     interface ValueGetter<C,T>{
