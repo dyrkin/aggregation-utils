@@ -34,10 +34,10 @@ AggregationUtils.sum(list, m(SomeClass.class).getSomeOtherClass().getIntegerValu
 
 The aggregation funtions supported:
 
-- **sum** - the sum of the return results from the specified method of the collection elements(supported datatypes: *Integer*, *Double*, *Float*, *String*)
-- **avg** - the avrage value of the return results from the specified method of the collection elements(supported datatypes: *Integer*, *Double*, *Float*)
-- **max** - the max value of the return results from the specified method of the collection elements(supported datatypes: *Integer*, *Double*, *Float*, *String*) **Not implemented yet**
-- **min** - the min value of the return results from the specified method of the collection elements(supported datatypes: *Integer*, *Double*, *Float*, *String*) **Not implemented yet**
+- **sum** - the sum of the return results from the specified method of the collection elements(supported datatypes: `Integer`, `Double`, `Float`, `String`)
+- **avg** - the avrage value of the return results from the specified method of the collection elements(supported datatypes: `Integer`, `Double`, `Float`)
+- **max** - the max value of the return results from the specified method of the collection elements(supported datatypes: `Integer`, `Double`, `Float`, `String`) **Not implemented yet**
+- **min** - the min value of the return results from the specified method of the collection elements(supported datatypes: `Integer`, `Double`, `Float`, `String`) **Not implemented yet**
 - **first** - the first value of the return results from the specified method of the collection elements(supported any datatype) **Not implemented yet**
 - **last** - the last value of the return results from the specified method of the collection elements(supported any datatype) **Not implemented yet**
 
