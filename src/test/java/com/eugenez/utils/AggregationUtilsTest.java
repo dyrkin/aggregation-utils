@@ -1,0 +1,256 @@
+package com.eugenez.utils;
+
+import com.eugenez.utils.AggregationUtils;
+import com.eugenez.utils.exception.AggregationException;
+import org.junit.Test;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+import java.util.UUID;
+import java.util.concurrent.*;
+
+import static com.eugenez.utils.MethodMagic.m;
+import static org.junit.Assert.assertEquals;
+
+/**
+ * @author eugene zadyra
+ */
+public class AggregationUtilsTest {
+    @Test
+    public void testSinglethredSum() throws AggregationException {
+
+        List<TestClass> list = new ArrayList<TestClass>() {{
+            add(new TestClass(5, 10, "Hello", 1));
+            add(new TestClass(5, 12, " World! ", 1));
+            add(new TestClass(5, 11, "Wassup!", 1));
+        }};
+
+        assertEquals(Integer.valueOf(15), AggregationUtils.sum(list, m(TestClass.class).getIntV()));
+        assertEquals(Double.valueOf(33), AggregationUtils.sum(list, m(TestClass.class).getDouV()));
+        assertEquals("Hello World! Wassup!", AggregationUtils.sum(list, m(TestClass.class).getStrV()));
+
+    }
+
+
+    @Test
+    public void testSinglethredCallHierarchySum() throws AggregationException {
+
+        List<TestClass> list = new ArrayList<TestClass>() {{
+            add(new TestClass().setSomeOtherClass(new TestClass.SomeOtherClass(12)));
+            add(new TestClass().setSomeOtherClass(new TestClass.SomeOtherClass(13)));
+            add(new TestClass().setSomeOtherClass(new TestClass.SomeOtherClass(14)));
+        }};
+
+        assertEquals(Integer.valueOf(39), AggregationUtils.sum(list, m(TestClass.class).getSomeOtherClass().getIntValue()));
+    }
+
+    @Test
+    public void testSinglethredCallHierarchyCollectionSum() throws AggregationException {
+
+        List<TestClass> list = new ArrayList<TestClass>() {{
+            add(new TestClass().addValToCollection(12));
+            add(new TestClass().addValToCollection(13));
+            add(new TestClass().addValToCollection(14));
+        }};
+
+        assertEquals(Integer.valueOf(39), AggregationUtils.sum(list, m(TestClass.class).getCollection().get(0)));
+    }
+
+    @Test
+    public void testMutithreadSum() throws InterruptedException, ExecutionException {
+        ExecutorService executorService = Executors.newFixedThreadPool(100);
+        List<Callable<ExpectedValue>> todo = new ArrayList<Callable<ExpectedValue>>();
+        for (int i = 0; i < 100; i++) {
+            todo.add(new MyCallable());
+        }
+        List<Future<ExpectedValue>> answers = executorService.invokeAll(todo);
+
+        //validate results
+        for (Future<ExpectedValue> future : answers) {
+            assertEquals(future.get().getExpectedInt(), future.get().getActualInt());
+//            System.out.println("Expected INT: " + future.get().getExpectedInt() + ". Actual INT: " + future.get().getActualInt());
+
+            assertEquals(future.get().getExpectedDouble(), future.get().getActualDouble());
+//            System.out.println("Expected DOUBLE: " + future.get().getExpectedDouble() + ". Actual DOUBLE: " + future.get().getActualDouble());
+
+            assertEquals(future.get().getExpectedString(), future.get().getActualString());
+//            System.out.println("Expected STRING: " + future.get().getExpectedString() + ". Actual STRING: " + future.get().getActualString());
+        }
+    }
+
+
+    private static class MyCallable implements Callable<ExpectedValue> {
+        int expectedIntSum = 0;
+        double expectedDoubleSum = 0.;
+        StringBuilder expectedStringSum = new StringBuilder();
+        List<TestClass> list;
+
+        ExpectedValue expectedValue;
+
+        public MyCallable() {
+            prepareData();
+        }
+
+        private void prepareData() {
+            Random r = new Random();
+            list = new ArrayList<TestClass>();
+            for (int z = 0; z < 100; z++) {
+                //generate random values
+                int randomInt = r.nextInt(100);
+                double randomDouble = r.nextDouble() * 100;
+                String randomString = UUID.randomUUID().toString().substring(1, 2);
+
+                list.add(new TestClass(randomInt, randomDouble, randomString, randomInt));
+
+                expectedIntSum += randomInt;
+                expectedDoubleSum += randomDouble;
+                expectedStringSum.append(randomString);
+            }
+            expectedValue = new ExpectedValue(expectedIntSum, expectedDoubleSum, expectedStringSum.toString(), expectedIntSum);
+        }
+
+        public ExpectedValue call() throws Exception {
+            expectedValue.setActualInt(AggregationUtils.sum(list, m(TestClass.class).getIntV()));
+            expectedValue.setActualDouble(AggregationUtils.sum(list, m(TestClass.class).getDouV()));
+            expectedValue.setActualString(AggregationUtils.sum(list, m(TestClass.class).getStrV()));
+            expectedValue.setActualSomeOtherClassInt(AggregationUtils.sum(list, m(TestClass.class).getSomeOtherClass().getIntValue()));
+            return expectedValue;
+        }
+    }
+
+    private static class ExpectedValue {
+        private Integer expectedInt;
+        private Double expectedDouble;
+        private String expectedString;
+        private Integer expectedSomeOtherClassInt;
+        private Integer actualInt;
+        private Double actualDouble;
+        private String actualString;
+        private Integer actualSomeOtherClassInt;
+
+        private ExpectedValue(Integer expectedInt, Double expectedDouble, String expectedString, Integer expectedSomeOtherClassInt) {
+            this.expectedInt = expectedInt;
+            this.expectedDouble = expectedDouble;
+            this.expectedString = expectedString;
+            this.expectedSomeOtherClassInt = expectedSomeOtherClassInt;
+        }
+
+        public Integer getExpectedInt() {
+            return expectedInt;
+        }
+
+        public Double getExpectedDouble() {
+            return expectedDouble;
+        }
+
+        public String getExpectedString() {
+            return expectedString;
+        }
+
+        public Integer getExpectedSomeOtherClassInt() {
+            return expectedSomeOtherClassInt;
+        }
+
+        public Integer getActualInt() {
+            return actualInt;
+        }
+
+        public void setActualInt(Integer actualInt) {
+            this.actualInt = actualInt;
+        }
+
+        public Double getActualDouble() {
+            return actualDouble;
+        }
+
+        public void setActualDouble(Double actualDouble) {
+            this.actualDouble = actualDouble;
+        }
+
+        public String getActualString() {
+            return actualString;
+        }
+
+        public void setActualString(String actualString) {
+            this.actualString = actualString;
+        }
+
+        public Integer getActualSomeOtherClassInt() {
+            return actualSomeOtherClassInt;
+        }
+
+        public void setActualSomeOtherClassInt(Integer actualSomeOtherClassInt) {
+            this.actualSomeOtherClassInt = actualSomeOtherClassInt;
+        }
+    }
+
+    public static class TestClass {
+
+        private int intV;
+
+        private double douV;
+
+        private String strV;
+
+        private SomeOtherClass someOtherClass;
+
+        private List<Integer> collection = new ArrayList<Integer>();
+
+        public TestClass() {
+        }
+
+        public TestClass(int intV, double douV, String strV, int someOtherClassInt) {
+            this.intV = intV;
+            this.douV = douV;
+            this.strV = strV;
+            this.someOtherClass = new SomeOtherClass(someOtherClassInt);
+        }
+
+        public int getIntV() {
+            return intV;
+        }
+
+        public double getDouV() {
+            return douV;
+        }
+
+        public String getStrV() {
+            return strV;
+        }
+
+        public SomeOtherClass getSomeOtherClass() {
+            return someOtherClass;
+        }
+
+        private TestClass addValToCollection(Integer val) {
+            collection.add(val);
+            return this;
+        }
+
+        public List<Integer> getCollection() {
+            return collection;
+        }
+
+        public TestClass setSomeOtherClass(SomeOtherClass someOtherClass) {
+            this.someOtherClass = someOtherClass;
+            return this;
+        }
+
+        public static class SomeOtherClass {
+            private int intValue;
+
+            public SomeOtherClass() {
+
+            }
+
+            public SomeOtherClass(int intValue) {
+                this.intValue = intValue;
+            }
+
+            public int getIntValue() {
+                return intValue;
+            }
+        }
+    }
+}
