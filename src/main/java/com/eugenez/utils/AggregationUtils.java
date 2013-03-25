@@ -19,43 +19,43 @@ public class AggregationUtils {
      *
      * @param collection - collection with POJO objects
      * @param dummy      - just for dummy call
-     * @param <T>        - collection with beans of type T
+     * @param <?>        - collection with beans of type T
      * @param <Z>        - result type
      * @return - returns result of aggregation.
      * @throws AggregationException
      */
-    public static <T, Z> Z sum(Collection<T> collection, Z dummy) throws AggregationException {
+    public static <Z> Z sum(Collection<?> collection, Z dummy) throws AggregationException {
         MethodEntry methodEntry = getAndResetInvokedMethod();
         return aggregate(collection, (Sum<Z>) SumFactory.createSumAggregator(getMethodReturnType(methodEntry)), methodEntry);
     }
 
-    public static <T, Z> Z min(Collection<T> collection, Z dummy) throws AggregationException {
+    public static <Z> Z min(Collection<?> collection, Z dummy) throws AggregationException {
         return null;
     }
 
-    public static <T, Z> Z max(Collection<T> collection, Z dummy) throws AggregationException {
+    public static <Z> Z max(Collection<?> collection, Z dummy) throws AggregationException {
         return null;
     }
 
-    public static <T, Z> Z avg(Collection<T> collection, Z dummy) throws AggregationException {
+    public static <Z> Z avg(Collection<?> collection, Z dummy) throws AggregationException {
         MethodEntry methodEntry = getAndResetInvokedMethod();
         return aggregate(collection, (Sum<Z>) AvgFactory.createAvgAggregator(getMethodReturnType(methodEntry)), methodEntry);
     }
 
-    public static <T, Z> Z first(Collection<T> collection, Z dummy) throws AggregationException {
+    public static <Z> Z first(Collection<?> collection, Z dummy) throws AggregationException {
         return null;
     }
 
-    public static <T, Z> Z last(Collection<T> collection, Z dummy) throws AggregationException {
+    public static <Z> Z last(Collection<?> collection, Z dummy) throws AggregationException {
         return null;
     }
 
-    public static <T, Z> Z set(Collection<T> collection, Z dummy) throws AggregationException {
+    public static <Z> Z set(Collection<?> collection, Z dummy) throws AggregationException {
         return null;
     }
 
-    private static <T, Z> Z aggregate(Collection<T> collection, Aggregator<Z> aggregator, MethodEntry methodEntry) throws AggregationException {
-        for (T element : collection) {
+    private static <Z> Z aggregate(Collection<?> collection, Aggregator<Z> aggregator, MethodEntry methodEntry) throws AggregationException {
+        for (Object element : collection) {
             try {
                 aggregator.add((Z) hierarchyCall(element, methodEntry));
             } catch (IllegalAccessException e) {
@@ -68,17 +68,15 @@ public class AggregationUtils {
     }
 
     private static Object hierarchyCall(Object element, MethodEntry methodEntry) throws IllegalAccessException, InvocationTargetException {
-        Object potentialResult = methodEntry.getMethod().invoke(element, methodEntry.getArgs());
-        if (methodEntry.getValue() != null) {
-            return hierarchyCall(potentialResult, methodEntry.getValue());
+
+        Object potentialResult = element;
+        if (methodEntry.getPreviousMethod() != null) {
+            potentialResult = hierarchyCall(element, methodEntry.getPreviousMethod());
         }
-        return potentialResult;
+         return methodEntry.getMethod().invoke(potentialResult, methodEntry.getArgs());
     }
 
     private static Class<?> getMethodReturnType(MethodEntry methodEntry) {
-        if (methodEntry.getValue() != null) {
-            return getMethodReturnType(methodEntry.getValue());
-        }
         return methodEntry.getReturnType();
     }
 

@@ -9,7 +9,7 @@ public class MethodEntry {
     private Method method;
     private Class<?> returnType;
     private Object[] args;
-    private MethodEntry value;
+    private MethodEntry previousMethod;
 
     MethodEntry(Method method, Object[] args) {
         this.method = method;
@@ -40,11 +40,11 @@ public class MethodEntry {
         this.args = args;
     }
 
-    public MethodEntry getValue() {
-        return value;
+    public MethodEntry getPreviousMethod() {
+        return previousMethod;
     }
 
-    public void setValue(MethodEntry value) {
-        this.value = value;
+    public void setPreviousMethod(MethodEntry previousMethod) {
+        this.previousMethod = previousMethod;
     }
 }

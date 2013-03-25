@@ -3,13 +3,20 @@ package com.eugenez.utils;
 import net.sf.cglib.proxy.Enhancer;
 import net.sf.cglib.proxy.MethodInterceptor;
 import net.sf.cglib.proxy.MethodProxy;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.lang.reflect.*;
+import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.lang.reflect.TypeVariable;
 
 /**
  * @author eugene zadyra
  */
 public class MethodMagic {
+
+    private static final Logger log = LoggerFactory.getLogger(MethodMagic.class);
 
     public static ThreadLocal<MethodEntry> invokedMethodHierarchy = new ThreadLocal<MethodEntry>();
 
@@ -34,7 +41,7 @@ public class MethodMagic {
             }
 
         } else if (typeToWrap instanceof TypeVariable) {
-            e.setSuperclass((Class<?>) ((TypeVariable) typeToWrap).getGenericDeclaration());
+            e.setSuperclass((methodEntry.getReturnType()));
         } else {
             e.setSuperclass((Class<?>) typeToWrap);
         }
@@ -61,28 +68,27 @@ public class MethodMagic {
             if (method.getName().equals("getCGLIBParametrizedType")) {
                 return parametrizedType;
             }
-            previousMethodEntry = createMethodEntry(previousMethodEntry, object, method, args);
-            invokedMethodHierarchy.set(previousMethodEntry);
+            MethodEntry newMethodEntry = createMethodEntry(previousMethodEntry, object, method, args);
+            invokedMethodHierarchy.set(newMethodEntry);
             if (!isSimpleReturnType(method, object)) {
-                return m(method.getGenericReturnType(), previousMethodEntry);
+                return m(method.getGenericReturnType(), newMethodEntry);
             }
-            return proxy.invokeSuper(object, args);
+            return null;
+        }
+
+        private MethodEntry createMethodEntry(MethodEntry previousMethodEntry, Object object, Method method, Object[] args) {
+            MethodEntry methodEntry = new MethodEntry(method, args);
+            methodEntry.setReturnType(getActualReturnType(method, object));
+            methodEntry.setPreviousMethod(previousMethodEntry);
+            return methodEntry;
         }
     }
 
     private static boolean isSimpleReturnType(Method method, Object object) {
         Class<?> returnType = getActualReturnType(method, object);
-        return returnType.equals(Integer.TYPE) || returnType.equals(Double.TYPE)
-                || returnType.equals(Float.TYPE) || returnType.equals(String.class);
-    }
-
-    private static MethodEntry createMethodEntry(MethodEntry previousMethodEntry, Object object, Method method, Object[] args) {
-        MethodEntry methodEntry = new MethodEntry(method, args);
-        methodEntry.setReturnType(getActualReturnType(method, object));
-        if (previousMethodEntry != null) {
-            setMethodEntryToTheBottomOfHierarchy(previousMethodEntry, methodEntry);
-        }
-        return previousMethodEntry != null ? previousMethodEntry : methodEntry;
+        return returnType.equals(Integer.TYPE) || returnType.equals(Integer.class) || returnType.equals(Double.TYPE)
+                || returnType.equals(Double.class)
+                || returnType.equals(Float.TYPE) || returnType.equals(Float.class) || returnType.equals(String.class);
     }
 
     private static Class<?> getActualReturnType(Method method, Object object) {
@@ -90,14 +96,6 @@ public class MethodMagic {
             return ((Parametrized) object).getCGLIBParametrizedType();
         }
         return method.getReturnType();
-    }
-
-    private static void setMethodEntryToTheBottomOfHierarchy(MethodEntry previousMethodEntry, MethodEntry methodEntry) {
-        if (previousMethodEntry.getValue() != null) {
-            setMethodEntryToTheBottomOfHierarchy(previousMethodEntry.getValue(), methodEntry);
-        } else {
-            previousMethodEntry.setValue(methodEntry);
-        }
     }
 
     public interface Parametrized {

@@ -3,10 +3,7 @@ package com.eugenez.utils;
 import com.eugenez.utils.exception.AggregationException;
 import org.junit.Test;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.*;
 
 import static com.eugenez.utils.MethodMagic.m;
@@ -31,7 +28,7 @@ public class AggregationUtilsTest {
 
     }
 
-    interface ValueGetter<C,T>{
+    interface ValueGetter<C, T> {
         T getValue(C object);
     }
 
@@ -52,9 +49,9 @@ public class AggregationUtilsTest {
     public void testSinglethredCallHierarchyCollectionSum() throws AggregationException {
 
         List<SomeClass> list = new ArrayList<SomeClass>() {{
-            add(new SomeClass().addValToCollection(12));
-            add(new SomeClass().addValToCollection(13));
-            add(new SomeClass().addValToCollection(14));
+            add(new SomeClass().addValsToIntCollection(12));
+            add(new SomeClass().addValsToIntCollection(13));
+            add(new SomeClass().addValsToIntCollection(14));
         }};
 
         assertEquals(Integer.valueOf(39), AggregationUtils.sum(list, m(SomeClass.class).getCollection().get(0)));
@@ -226,8 +223,8 @@ public class AggregationUtilsTest {
             return someOtherClass;
         }
 
-        private SomeClass addValToCollection(Integer val) {
-            collection.add(val);
+        private SomeClass addValsToIntCollection(Integer... val) {
+            collection.addAll(Arrays.asList(val));
             return this;
         }
 
@@ -253,6 +250,55 @@ public class AggregationUtilsTest {
 
             public int getIntValue() {
                 return intValue;
+            }
+        }
+    }
+
+
+    @Test
+    public void testSinglethredCallSum2() throws AggregationException {
+
+        List<ClassWithCollection> list = new ArrayList<ClassWithCollection>() {{
+            add(new ClassWithCollection(new ClassWithCollection.CollectionElement(12)));
+            add(new ClassWithCollection(new ClassWithCollection.CollectionElement(13)));
+            add(new ClassWithCollection(new ClassWithCollection.CollectionElement(14)));
+        }};
+
+        assertEquals(Integer.valueOf(39), AggregationUtils.sum(list, m(ClassWithCollection.class).getCollectionElements().get(0).getIntegerValue()));
+    }
+
+
+    public static class ClassWithCollection {
+        private List<CollectionElement> collectionElements;
+
+        public ClassWithCollection(CollectionElement... collectionElements) {
+            this.collectionElements = new ArrayList<CollectionElement>();
+            this.collectionElements.addAll(Arrays.asList(collectionElements));
+        }
+
+        public ClassWithCollection() {
+        }
+
+        public List<CollectionElement> getCollectionElements() {
+            return collectionElements;
+        }
+
+        public void setCollectionElements(List<CollectionElement> collectionElements) {
+            this.collectionElements = collectionElements;
+        }
+
+        public static class CollectionElement {
+            public Integer integerValue;
+
+            public CollectionElement() {
+            }
+
+            public CollectionElement(Integer integerValue) {
+                this.integerValue = integerValue;
+            }
+
+            public Integer getIntegerValue() {
+                return integerValue;
             }
         }
     }
