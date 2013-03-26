@@ -40,6 +40,7 @@ AggregationUtils.sum(list, m(ClassWithCollection.class).getCollectionElements().
 ````
 
 **Nested collection magic**
+
 Instead of:
 ```java
 int sum=0;
