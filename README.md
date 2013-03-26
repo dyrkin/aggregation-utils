@@ -53,12 +53,12 @@ for(ClassWithCollection classWithCollection: list){
 }
 ````
 
-You can just write(specifing element index = `-1`):
+You can just write(specifying element index = `-1`):
 ```java
 AggregationUtils.sum(list, m(ClassWithCollection.class).getCollectionElements().get(-1).getIntegerValue())
 ````
 
-Aggregation utility will go though all element in `getCollectionElements()` collection.
+adn aggregation utility will go through all elements in `getCollectionElements()` collection.
 
 The aggregation funtions supported:
 
