@@ -4,6 +4,8 @@ Aggregation utils used for collections and doesn't requires anonymous classes to
 This is means that you don't need to do something like this:
 
 ```java
+List<SomeClass> list = new ArrayList<SomeClass>();
+//add some data here
 AggregationUtils.sum(list, new ValueGetter<SomeClass, Integer>() {
     public Integer getValue(SomeClass object) {
         return object.getIntegerValue();
@@ -14,6 +16,8 @@ AggregationUtils.sum(list, new ValueGetter<SomeClass, Integer>() {
 or
 
 ```java
+List<SomeClass> list = new ArrayList<SomeClass>();
+//add some data here
 Integer sum = 0;
 for(SomeClass object: list){
     sum+=object.getIntegerValue();
@@ -23,12 +27,16 @@ for(SomeClass object: list){
 Just do instead:
 
 ```java
+List<SomeClass> list = new ArrayList<SomeClass>();
+//add some data here
 AggregationUtils.sum(list, m(SomeClass.class).getIntegerValue());
 ````
 
 You can also do hierarchy calls:
 
 ```java
+List<SomeClass> list = new ArrayList<SomeClass>();
+//add some data here
 AggregationUtils.sum(list, m(SomeClass.class).getSomeOtherClass().getIntegerValue());
 ````
 
@@ -36,6 +44,8 @@ For every element in the list call `getCollectionElements()` method which return
 Get first element from collection and call the method `getIntegerValue()` and summarize result:
 
 ```java
+List<ClassWithCollection> list = new ArrayList<ClassWithCollection>();
+//add some data here
 AggregationUtils.sum(list, m(ClassWithCollection.class).getCollectionElements().get(0).getIntegerValue());
 ````
 
@@ -43,6 +53,8 @@ AggregationUtils.sum(list, m(ClassWithCollection.class).getCollectionElements().
 
 Instead of:
 ```java
+List<ClassWithCollection> list = new ArrayList<ClassWithCollection>();
+//add some data here
 int sum=0;
 for(ClassWithCollection classWithCollection: list){
     if(classWithCollection.getCollectionElements()!=null){
@@ -55,6 +67,8 @@ for(ClassWithCollection classWithCollection: list){
 
 You can just write(specifying element index = `-1`):
 ```java
+List<ClassWithCollection> list = new ArrayList<ClassWithCollection>();
+//add some data here
 AggregationUtils.sum(list, m(ClassWithCollection.class).getCollectionElements().get(-1).getIntegerValue())
 ````
 
@@ -72,6 +86,8 @@ The aggregation funtions supported:
 There is additional function supported by Aggregation utils and it is `set`. There is example of how to use it:
 
 ```java
+List<ClassWithCollection> list = new ArrayList<ClassWithCollection>();
+//add some data here
 AggregationUtils.sum(list, m(SomeClass.class).setIntegerValue(30));
 ````
 
