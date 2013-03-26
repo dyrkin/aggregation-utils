@@ -23,8 +23,9 @@ for(SomeClass object: list){
     sum+=object.getIntegerValue();
 }
 ````
+Just add static import: `import static com.eugenez.utils.MethodMagic.m;`
 
-Just do instead:
+And do instead:
 
 ```java
 List<SomeClass> list = new ArrayList<SomeClass>();
