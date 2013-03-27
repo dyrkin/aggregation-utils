@@ -70,7 +70,7 @@ You can just write(specifying element index = `-1`):
 ```java
 List<ClassWithCollection> list = new ArrayList<ClassWithCollection>();
 //add some data here
-Integer sum = AggregationUtils.sum(list, m(ClassWithCollection.class).getCollectionElements().get(-1).getIntegerValue())
+Integer sum = AggregationUtils.sum(list, m(ClassWithCollection.class).getCollectionElements().get(-1).getIntegerValue());
 ````
 
 adn aggregation utility will go through all elements in `getCollectionElements()` collection.
