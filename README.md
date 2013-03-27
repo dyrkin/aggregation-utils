@@ -89,7 +89,7 @@ There is additional function supported by Aggregation utils and it is `set`. The
 ```java
 List<ClassWithCollection> list = new ArrayList<ClassWithCollection>();
 //add some data here
-Integer sum = AggregationUtils.sum(list, m(SomeClass.class).setIntegerValue(30));
+AggregationUtils.sum(list, m(SomeClass.class).setIntegerValue(30));
 ````
 
 This is means that for every element in collection will be called the method `setIntegerValue()` whith the value `30`. You can use it to initialize some state in collection element or reset some values.
