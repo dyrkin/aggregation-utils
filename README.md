@@ -6,7 +6,7 @@ This is means that you don't need to do something like this:
 ```java
 List<SomeClass> list = new ArrayList<SomeClass>();
 //add some data here
-AggregationUtils.sum(list, new ValueGetter<SomeClass, Integer>() {
+Integer sum = AggregationUtils.sum(list, new ValueGetter<SomeClass, Integer>() {
     public Integer getValue(SomeClass object) {
         return object.getIntegerValue();
     }
@@ -30,7 +30,7 @@ And do instead:
 ```java
 List<SomeClass> list = new ArrayList<SomeClass>();
 //add some data here
-AggregationUtils.sum(list, m(SomeClass.class).getIntegerValue());
+Integer sum = AggregationUtils.sum(list, m(SomeClass.class).getIntegerValue());
 ````
 
 You can also do hierarchy calls:
@@ -38,7 +38,7 @@ You can also do hierarchy calls:
 ```java
 List<SomeClass> list = new ArrayList<SomeClass>();
 //add some data here
-AggregationUtils.sum(list, m(SomeClass.class).getSomeOtherClass().getIntegerValue());
+Integer sum = AggregationUtils.sum(list, m(SomeClass.class).getSomeOtherClass().getIntegerValue());
 ````
 
 For every element in the list call `getCollectionElements()` method which returns the collection of `CollectionElement.class` objects. 
@@ -47,7 +47,7 @@ Get first element from collection and call the method `getIntegerValue()` and su
 ```java
 List<ClassWithCollection> list = new ArrayList<ClassWithCollection>();
 //add some data here
-AggregationUtils.sum(list, m(ClassWithCollection.class).getCollectionElements().get(0).getIntegerValue());
+Integer sum = AggregationUtils.sum(list, m(ClassWithCollection.class).getCollectionElements().get(0).getIntegerValue());
 ````
 
 **Nested collection magic**
@@ -70,7 +70,7 @@ You can just write(specifying element index = `-1`):
 ```java
 List<ClassWithCollection> list = new ArrayList<ClassWithCollection>();
 //add some data here
-AggregationUtils.sum(list, m(ClassWithCollection.class).getCollectionElements().get(-1).getIntegerValue())
+Integer sum = AggregationUtils.sum(list, m(ClassWithCollection.class).getCollectionElements().get(-1).getIntegerValue())
 ````
 
 adn aggregation utility will go through all elements in `getCollectionElements()` collection.
@@ -89,7 +89,7 @@ There is additional function supported by Aggregation utils and it is `set`. The
 ```java
 List<ClassWithCollection> list = new ArrayList<ClassWithCollection>();
 //add some data here
-AggregationUtils.sum(list, m(SomeClass.class).setIntegerValue(30));
+Integer sum = AggregationUtils.sum(list, m(SomeClass.class).setIntegerValue(30));
 ````
 
 This is means that for every element in collection will be called the method `setIntegerValue()` whith the value `30`. You can use it to initialize some state in collection element or reset some values.
