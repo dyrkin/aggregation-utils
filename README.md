@@ -1,5 +1,7 @@
 **Aggregation utils**
 
+**SUM**
+
 Aggregation utils used for collections and doesn't requires anonymous classes to specify method which will be used for aggregation.
 This is means that you don't need to do something like this:
 
@@ -73,7 +75,19 @@ List<ClassWithCollection> list = new ArrayList<ClassWithCollection>();
 Integer sum = AggregationUtils.sum(list, m(ClassWithCollection.class).getCollectionElements().get(-1).getIntegerValue());
 ````
 
-adn aggregation utility will go through all elements in `getCollectionElements()` collection.
+and aggregation utility will go through all elements in `getCollectionElements()` collection.
+
+**EXTRACT**
+
+Extract aggreagation function used to extract collection of the values returned by the specified method.
+
+There is example:
+
+```java
+List<ClassWithCollection> list = new ArrayList<ClassWithCollection>();
+//add some data here
+List<Integer> values = AggregationUtils.extract(list, m(ClassWithCollection.class).getCollectionElements().get(-1).getIntegerValue());
+````
 
 The aggregation funtions supported:
 
@@ -83,6 +97,7 @@ The aggregation funtions supported:
 - `min` - the min value of the return results from the specified method of the collection elements(supported datatypes: `Integer`, `Double`, `Float`, `String`) **Not implemented yet**
 - `first` - the first value of the return results from the specified method of the collection elements(supported any datatype) **Not implemented yet**
 - `last` - the last value of the return results from the specified method of the collection elements(supported any datatype) **Not implemented yet**
+- `extract` - colelction of specified field value (supported any datatype)
 
 There is additional function supported by Aggregation utils and it is `set`. There is example of how to use it:
 
