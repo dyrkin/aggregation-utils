@@ -28,11 +28,6 @@ public class AggregationUtilsTest {
 
     }
 
-    interface ValueGetter<C, T> {
-        T getValue(C object);
-    }
-
-
     @Test
     public void testSinglethredCallHierarchySum() throws AggregationException {
 
@@ -267,6 +262,28 @@ public class AggregationUtilsTest {
         assertEquals(Integer.valueOf(39), AggregationUtils.sum(list, m(ClassWithCollection.class).getCollectionElements().get(0).getIntegerValue()));
     }
 
+    @Test
+    public void testAggregateList() throws AggregationException {
+
+        List<ClassWithCollection> list = new ArrayList<ClassWithCollection>() {{
+            add(new ClassWithCollection(new ClassWithCollection.CollectionElement(12),
+                    new ClassWithCollection.CollectionElement(12),
+                    new ClassWithCollection.CollectionElement(15)));
+            add(new ClassWithCollection(new ClassWithCollection.CollectionElement(13)));
+            add(new ClassWithCollection(new ClassWithCollection.CollectionElement(14)));
+        }};
+
+        List<Integer> resultList = AggregationUtils.extract(list, m(ClassWithCollection.class).getCollectionElements().get(-1).getIntegerValue());
+
+        assertEquals(5, resultList.size());
+
+        Collections.sort(resultList);
+        assertEquals(12, resultList.get(0).intValue());
+        assertEquals(12, resultList.get(1).intValue());
+        assertEquals(13, resultList.get(2).intValue());
+        assertEquals(14, resultList.get(3).intValue());
+        assertEquals(15, resultList.get(4).intValue());
+    }
 
     @Test
     public void testSinglethredCallSum3() throws AggregationException {
@@ -280,15 +297,6 @@ public class AggregationUtilsTest {
         }};
 
         assertEquals(Integer.valueOf(66), AggregationUtils.sum(list, m(ClassWithCollection.class).getCollectionElements().get(-1).getIntegerValue()));
-
-        int sum=0;
-        for(ClassWithCollection classWithCollection: list){
-            if(classWithCollection.getCollectionElements()!=null){
-                for(ClassWithCollection.CollectionElement collectionElement: classWithCollection.getCollectionElements()){
-                    sum+=collectionElement.getIntegerValue();
-                }
-            }
-        }
     }
 
 

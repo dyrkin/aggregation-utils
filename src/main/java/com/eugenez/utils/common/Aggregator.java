@@ -15,8 +15,4 @@ public abstract class Aggregator<T> {
             values.add(value);
         }
     }
-
-    public abstract T getResult();
-
-    protected abstract T zero();
 }

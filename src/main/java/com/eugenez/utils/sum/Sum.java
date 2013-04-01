@@ -1,11 +1,11 @@
 package com.eugenez.utils.sum;
 
-import com.eugenez.utils.common.Aggregator;
+import com.eugenez.utils.common.ItemAggregator;
 
 /**
  * @author eugene zadyra
  */
-public abstract class Sum<T> extends Aggregator<T> {
+public abstract class Sum<T> extends ItemAggregator<T> {
 
     protected abstract T inc(T oldVal, T incVal);
 

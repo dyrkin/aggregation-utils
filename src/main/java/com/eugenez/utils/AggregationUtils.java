@@ -2,6 +2,8 @@ package com.eugenez.utils;
 
 import com.eugenez.utils.avg.AvgFactory;
 import com.eugenez.utils.common.Aggregator;
+import com.eugenez.utils.common.ItemAggregator;
+import com.eugenez.utils.common.ListAggregator;
 import com.eugenez.utils.exception.AggregationException;
 import com.eugenez.utils.sum.Sum;
 import com.eugenez.utils.sum.SumFactory;
@@ -9,6 +11,7 @@ import com.eugenez.utils.sum.SumFactory;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 
 /**
  * @author eugene zadyra
@@ -27,7 +30,7 @@ public class AggregationUtils {
      */
     public static <Z> Z sum(Collection<?> collection, Z dummy) throws AggregationException {
         MethodEntry methodEntry = getAndResetInvokedMethod();
-        return aggregate(collection, (Sum<Z>) SumFactory.createSumAggregator(getMethodReturnType(methodEntry)), methodEntry);
+        return aggregateItem(collection, (Sum<Z>) SumFactory.createSumAggregator(getMethodReturnType(methodEntry)), methodEntry);
     }
 
     public static <Z> Z min(Collection<?> collection, Z dummy) throws AggregationException {
@@ -40,7 +43,7 @@ public class AggregationUtils {
 
     public static <Z> Z avg(Collection<?> collection, Z dummy) throws AggregationException {
         MethodEntry methodEntry = getAndResetInvokedMethod();
-        return aggregate(collection, (Sum<Z>) AvgFactory.createAvgAggregator(getMethodReturnType(methodEntry)), methodEntry);
+        return aggregateItem(collection, (Sum<Z>) AvgFactory.createAvgAggregator(getMethodReturnType(methodEntry)), methodEntry);
     }
 
     public static <Z> Z first(Collection<?> collection, Z dummy) throws AggregationException {
@@ -55,11 +58,23 @@ public class AggregationUtils {
         return null;
     }
 
-    public static <Z> Collection<Z> list(Collection<?> collection, Z dummy) throws AggregationException {
-        return null;
+    public static <Z> List<Z> extract(Collection<?> collection, Z dummy) throws AggregationException {
+        MethodEntry methodEntry = getAndResetInvokedMethod();
+        return aggregateList(collection, methodEntry);
     }
 
-    private static <Z> Z aggregate(Collection<?> collection, Aggregator<Z> aggregator, MethodEntry methodEntry) throws AggregationException {
+    private static <Z> Z aggregateItem(Collection<?> collection, ItemAggregator<Z> aggregator, MethodEntry methodEntry) throws AggregationException {
+        aggregate(collection, aggregator, methodEntry);
+        return aggregator.getResult();
+    }
+
+    private static <Z> List<Z> aggregateList(Collection<?> collection, MethodEntry methodEntry) throws AggregationException {
+        ListAggregator<Z> aggregator = new ListAggregator<Z>();
+        aggregate(collection, aggregator, methodEntry);
+        return aggregator.getResult();
+    }
+
+    private static <Z> void aggregate(Collection<?> collection, Aggregator<Z> aggregator, MethodEntry methodEntry) throws AggregationException {
         for (Object element : collection) {
             try {
                 hierarchyCall(element, methodEntry, aggregator);
@@ -69,7 +84,6 @@ public class AggregationUtils {
                 throw new AggregationException("Error occurred", e);
             }
         }
-        return aggregator.getResult();
     }
 
     private static void hierarchyCall(Object element, MethodEntry methodEntry, Aggregator aggregator) throws IllegalAccessException, InvocationTargetException {
