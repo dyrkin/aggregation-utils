@@ -36,7 +36,9 @@ List<Building> buildings = new ArrayList<Building>();
 Integer apartmentsCount = AggregationUtils.sum(buildings, m(Building.class).getApartmetsCount());
 ````
 
-You also can do hierarchycal calls. So, to count all bricks from all buildings on your street do:
+**Hierarchical calls**
+
+You also can do hierarchical calls. So, to count all bricks from all buildings on your street do:
 
 ```java
 List<Building> buildings = new ArrayList<Building>();
