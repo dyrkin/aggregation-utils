@@ -11,9 +11,7 @@ List<Building> buildings = new ArrayList<Building>();
 //add some data here
 Integer apartmentsCount = AggregationUtils.sum(buildings, new ValueGetter<Building, Integer>() {
     public Integer getValue(Building object) {
-        if(object.getResidents()!=null){
-            return object.getApartmetsCount();
-        }
+         return object.getApartmetsCount();
     }
 });
 ````
@@ -25,9 +23,7 @@ List<Building> buildings = new ArrayList<Building>();
 //add some data here
 Integer apartmentsCount = 0;
 for(Building building: buildings){
-    if(building.getResidents()!=null){
-        resudentsCount+=building.getApartmetsCount();
-    }
+    apartmentsCount+=building.getApartmetsCount();
 }
 ````
 Just add static import: `import static com.eugenez.utils.MethodMagic.m;`
