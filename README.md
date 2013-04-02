@@ -48,7 +48,7 @@ Integer bicksCount = AggregationUtils.sum(buildings, m(Building.class).getBuildi
 
 You don't need to do any NullPointerException checks.
 
-Ok, to calaculate all residents who live in the first apartment in every building on your street.
+Ok, to count all residents who live in the first apartment in every building on your street.
 
 ```java
 List<Building> buildings = new ArrayList<Building>();
