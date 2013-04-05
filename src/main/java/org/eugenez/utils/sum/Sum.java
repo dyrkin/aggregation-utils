@@ -1,6 +1,6 @@
-package com.eugenez.utils.sum;
+package org.eugenez.utils.sum;
 
-import com.eugenez.utils.common.ItemAggregator;
+import org.eugenez.utils.common.ItemAggregator;
 
 /**
  * @author eugene zadyra

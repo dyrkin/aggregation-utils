@@ -1,4 +1,4 @@
-package com.eugenez.utils.exception;
+package org.eugenez.utils.exception;
 
 /**
 * @author eugene zadyra

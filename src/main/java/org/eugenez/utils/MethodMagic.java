@@ -1,4 +1,4 @@
-package com.eugenez.utils;
+package org.eugenez.utils;
 
 import net.sf.cglib.proxy.Enhancer;
 import net.sf.cglib.proxy.MethodInterceptor;

@@ -1,4 +1,4 @@
-package com.eugenez.utils.common;
+package org.eugenez.utils.common;
 
 /**
  * User: ezadyra

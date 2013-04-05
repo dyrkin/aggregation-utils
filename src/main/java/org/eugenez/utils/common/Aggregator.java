@@ -1,4 +1,4 @@
-package com.eugenez.utils.common;
+package org.eugenez.utils.common;
 
 import java.util.ArrayList;
 import java.util.List;

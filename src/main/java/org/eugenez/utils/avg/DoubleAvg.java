@@ -1,6 +1,6 @@
-package com.eugenez.utils.avg;
+package org.eugenez.utils.avg;
 
-import com.eugenez.utils.sum.DoubleSum;
+import org.eugenez.utils.sum.DoubleSum;
 
 /**
  * @author eugene zadyra

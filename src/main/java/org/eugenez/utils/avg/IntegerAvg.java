@@ -1,6 +1,6 @@
-package com.eugenez.utils.avg;
+package org.eugenez.utils.avg;
 
-import com.eugenez.utils.sum.IntegerSum;
+import org.eugenez.utils.sum.IntegerSum;
 
 /**
  * @author eugene zadyra

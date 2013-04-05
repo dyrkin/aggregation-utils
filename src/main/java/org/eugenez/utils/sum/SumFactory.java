@@ -1,7 +1,7 @@
-package com.eugenez.utils.sum;
+package org.eugenez.utils.sum;
 
-import com.eugenez.utils.common.Aggregator;
-import com.eugenez.utils.exception.AggregationException;
+import org.eugenez.utils.common.Aggregator;
+import org.eugenez.utils.exception.AggregationException;
 
 /**
  * @author eugene zadyra

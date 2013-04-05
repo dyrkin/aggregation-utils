@@ -1,12 +1,13 @@
-package com.eugenez.utils;
+package org.eugenez.utils;
 
-import com.eugenez.utils.exception.AggregationException;
+import org.eugenez.utils.exception.AggregationException;
+import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.*;
 import java.util.concurrent.*;
 
-import static com.eugenez.utils.MethodMagic.m;
+import static org.eugenez.utils.MethodMagic.m;
 import static org.junit.Assert.assertEquals;
 
 /**
@@ -22,7 +23,7 @@ public class AggregationUtilsTest {
             add(new SomeClass(5, 11, "Wassup!", 1));
         }};
 
-        assertEquals(Integer.valueOf(15), AggregationUtils.sum(list, m(SomeClass.class).getIntV()));
+        Assert.assertEquals(Integer.valueOf(15), AggregationUtils.sum(list, m(SomeClass.class).getIntV()));
         assertEquals(Double.valueOf(33), AggregationUtils.sum(list, m(SomeClass.class).getDouV()));
         assertEquals("Hello World! Wassup!", AggregationUtils.sum(list, m(SomeClass.class).getStrV()));
 

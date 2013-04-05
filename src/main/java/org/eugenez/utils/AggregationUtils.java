@@ -1,12 +1,12 @@
-package com.eugenez.utils;
+package org.eugenez.utils;
 
-import com.eugenez.utils.avg.AvgFactory;
-import com.eugenez.utils.common.Aggregator;
-import com.eugenez.utils.common.ItemAggregator;
-import com.eugenez.utils.common.ListAggregator;
-import com.eugenez.utils.exception.AggregationException;
-import com.eugenez.utils.sum.Sum;
-import com.eugenez.utils.sum.SumFactory;
+import org.eugenez.utils.avg.AvgFactory;
+import org.eugenez.utils.common.Aggregator;
+import org.eugenez.utils.common.ItemAggregator;
+import org.eugenez.utils.common.ListAggregator;
+import org.eugenez.utils.exception.AggregationException;
+import org.eugenez.utils.sum.Sum;
+import org.eugenez.utils.sum.SumFactory;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;

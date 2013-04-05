@@ -1,4 +1,4 @@
-package com.eugenez.utils;
+package org.eugenez.utils;
 
 import java.lang.reflect.Method;
 

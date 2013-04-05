@@ -1,4 +1,4 @@
-package com.eugenez.utils.sum;
+package org.eugenez.utils.sum;
 
 /**
 * @author eugene zadyra
