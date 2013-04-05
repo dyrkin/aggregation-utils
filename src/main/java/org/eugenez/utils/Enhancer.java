@@ -1,6 +1,5 @@
 package org.eugenez.utils;
 
-import net.sf.cglib.proxy.Enhancer;
 import net.sf.cglib.proxy.MethodInterceptor;
 import net.sf.cglib.proxy.MethodProxy;
 import org.slf4j.Logger;
@@ -14,22 +13,22 @@ import java.lang.reflect.TypeVariable;
 /**
  * @author eugene zadyra
  */
-public class MethodMagic {
+public class Enhancer {
 
-    private static final Logger log = LoggerFactory.getLogger(MethodMagic.class);
+    private static final Logger log = LoggerFactory.getLogger(Enhancer.class);
 
     public static ThreadLocal<MethodEntry> invokedMethodHierarchy = new ThreadLocal<MethodEntry>();
 
-    public static <T> T m(Class<T> typeToWrap) {
-        return m(typeToWrap, null);
+    public static <T> T e(Class<T> typeToWrap) {
+        return e(typeToWrap, null);
     }
 
-    private static <T> T m(Type typeToWrap, MethodEntry methodEntry) {
+    private static <T> T e(Type typeToWrap, MethodEntry methodEntry) {
         return enhance(typeToWrap, methodEntry);
     }
 
     private static <T> T enhance(Type typeToWrap, MethodEntry methodEntry) {
-        Enhancer e = new Enhancer();
+        net.sf.cglib.proxy.Enhancer e = new net.sf.cglib.proxy.Enhancer();
         Class<?> parameterizedType = null;
         if (typeToWrap instanceof ParameterizedType) {
             parameterizedType = (Class<?>) ((ParameterizedType) typeToWrap).getActualTypeArguments()[0];
@@ -71,7 +70,7 @@ public class MethodMagic {
             MethodEntry newMethodEntry = createMethodEntry(previousMethodEntry, object, method, args);
             invokedMethodHierarchy.set(newMethodEntry);
             if (!isSimpleReturnType(method, object)) {
-                return m(method.getGenericReturnType(), newMethodEntry);
+                return e(method.getGenericReturnType(), newMethodEntry);
             }
             return null;
         }

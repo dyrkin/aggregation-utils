@@ -7,7 +7,7 @@ import org.junit.Test;
 import java.util.*;
 import java.util.concurrent.*;
 
-import static org.eugenez.utils.MethodMagic.m;
+import static org.eugenez.utils.Enhancer.e;
 import static org.junit.Assert.assertEquals;
 
 /**
@@ -23,9 +23,9 @@ public class AggregationUtilsTest {
             add(new SomeClass(5, 11, "Wassup!", 1));
         }};
 
-        Assert.assertEquals(Integer.valueOf(15), AggregationUtils.sum(list, m(SomeClass.class).getIntV()));
-        assertEquals(Double.valueOf(33), AggregationUtils.sum(list, m(SomeClass.class).getDouV()));
-        assertEquals("Hello World! Wassup!", AggregationUtils.sum(list, m(SomeClass.class).getStrV()));
+        Assert.assertEquals(Integer.valueOf(15), AggregationUtils.sum(list, e(SomeClass.class).getIntV()));
+        assertEquals(Double.valueOf(33), AggregationUtils.sum(list, e(SomeClass.class).getDouV()));
+        assertEquals("Hello World! Wassup!", AggregationUtils.sum(list, e(SomeClass.class).getStrV()));
 
     }
 
@@ -38,7 +38,7 @@ public class AggregationUtilsTest {
             add(new SomeClass().setSomeOtherClass(new SomeClass.SomeOtherClass(14)));
         }};
 
-        assertEquals(Integer.valueOf(39), AggregationUtils.sum(list, m(SomeClass.class).getSomeOtherClass().getIntValue()));
+        assertEquals(Integer.valueOf(39), AggregationUtils.sum(list, e(SomeClass.class).getSomeOtherClass().getIntValue()));
     }
 
     @Test
@@ -50,7 +50,7 @@ public class AggregationUtilsTest {
             add(new SomeClass().addValsToIntCollection(14));
         }};
 
-        assertEquals(Integer.valueOf(39), AggregationUtils.sum(list, m(SomeClass.class).getCollection().get(0)));
+        assertEquals(Integer.valueOf(39), AggregationUtils.sum(list, e(SomeClass.class).getCollection().get(0)));
     }
 
     @Test
@@ -107,10 +107,10 @@ public class AggregationUtilsTest {
         }
 
         public ExpectedValue call() throws Exception {
-            expectedValue.setActualInt(AggregationUtils.sum(list, m(SomeClass.class).getIntV()));
-            expectedValue.setActualDouble(AggregationUtils.sum(list, m(SomeClass.class).getDouV()));
-            expectedValue.setActualString(AggregationUtils.sum(list, m(SomeClass.class).getStrV()));
-            expectedValue.setActualSomeOtherClassInt(AggregationUtils.sum(list, m(SomeClass.class).getSomeOtherClass().getIntValue()));
+            expectedValue.setActualInt(AggregationUtils.sum(list, e(SomeClass.class).getIntV()));
+            expectedValue.setActualDouble(AggregationUtils.sum(list, e(SomeClass.class).getDouV()));
+            expectedValue.setActualString(AggregationUtils.sum(list, e(SomeClass.class).getStrV()));
+            expectedValue.setActualSomeOtherClassInt(AggregationUtils.sum(list, e(SomeClass.class).getSomeOtherClass().getIntValue()));
             return expectedValue;
         }
     }
@@ -260,7 +260,7 @@ public class AggregationUtilsTest {
             add(new ClassWithCollection(new ClassWithCollection.CollectionElement(14)));
         }};
 
-        assertEquals(Integer.valueOf(39), AggregationUtils.sum(list, m(ClassWithCollection.class).getCollectionElements().get(0).getIntegerValue()));
+        assertEquals(Integer.valueOf(39), AggregationUtils.sum(list, e(ClassWithCollection.class).getCollectionElements().get(0).getIntegerValue()));
     }
 
     @Test
@@ -274,7 +274,7 @@ public class AggregationUtilsTest {
             add(new ClassWithCollection(new ClassWithCollection.CollectionElement(14)));
         }};
 
-        List<Integer> resultList = AggregationUtils.extract(list, m(ClassWithCollection.class).getCollectionElements().get(-1).getIntegerValue());
+        List<Integer> resultList = AggregationUtils.extract(list, e(ClassWithCollection.class).getCollectionElements().get(-1).getIntegerValue());
 
         assertEquals(5, resultList.size());
 
@@ -297,7 +297,7 @@ public class AggregationUtilsTest {
             add(new ClassWithCollection(new ClassWithCollection.CollectionElement(14)));
         }};
 
-        assertEquals(Integer.valueOf(66), AggregationUtils.sum(list, m(ClassWithCollection.class).getCollectionElements().get(-1).getIntegerValue()));
+        assertEquals(Integer.valueOf(66), AggregationUtils.sum(list, e(ClassWithCollection.class).getCollectionElements().get(-1).getIntegerValue()));
     }
 
 

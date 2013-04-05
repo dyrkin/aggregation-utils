@@ -135,8 +135,8 @@ public class AggregationUtils {
     }
 
     private static MethodEntry getAndResetInvokedMethod() {
-        MethodEntry methodEntry = MethodMagic.invokedMethodHierarchy.get();
-        MethodMagic.invokedMethodHierarchy.set(null);
+        MethodEntry methodEntry = Enhancer.invokedMethodHierarchy.get();
+        Enhancer.invokedMethodHierarchy.set(null);
 
         return getEntryFromTheBottomOfHierarchy(methodEntry);
     }
