@@ -33,7 +33,7 @@ And do instead:
 ```java
 List<Building> buildings = new ArrayList<Building>();
 //add some data here
-Integer apartmentsCount = AggregationUtils.sum(buildings, m(Building.class).getApartmetsCount());
+Integer apartmentsCount = AggregationUtils.sum(buildings, e(Building.class).getApartmetsCount());
 ````
 
 **Hierarchical calls**
@@ -43,7 +43,7 @@ You also can do hierarchical calls. So, to count all bricks from all buildings o
 ```java
 List<Building> buildings = new ArrayList<Building>();
 //add some data here
-Integer bicksCount = AggregationUtils.sum(buildings, m(Building.class).getBuildingFrame().getBricks().size()));
+Integer bicksCount = AggregationUtils.sum(buildings, e(Building.class).getBuildingFrame().getBricks().size()));
 ````
 
 You don't need to do any NullPointerException checks.
@@ -53,7 +53,7 @@ Ok, to count all residents who live in the first apartment in every building on 
 ```java
 List<Building> buildings = new ArrayList<Building>();
 //add some data here
-Integer residentsCount = AggregationUtils.sum(buildings, m(Building.class).getApartments().get(0).getResidents().size());
+Integer residentsCount = AggregationUtils.sum(buildings, e(Building.class).getApartments().get(0).getResidents().size());
 ````
 
 **Nested collection magic**
@@ -80,7 +80,7 @@ You can just write(specifying element index = `-1`):
 ```java
 List<Building> buildings = new ArrayList<Building>();
 //add some data here
-Integer residentsCount = AggregationUtils.sum(buildings, m(Building.class).getApartments().get(-1).getResidents().size());
+Integer residentsCount = AggregationUtils.sum(buildings, e(Building.class).getApartments().get(-1).getResidents().size());
 ````
 
 and aggregation utility will go through all elements in `getApartments()` collection.
@@ -95,7 +95,7 @@ To get a list of ages of every resident who live in every apartment in every bui
 ```java
 List<Building> buildings = new ArrayList<Building>();
 //add some data here
-List<Integer> ages = AggregationUtils.extract(buildings, m(Building.class).getApartments().get(-1).getResidents().get(-1).getAge());
+List<Integer> ages = AggregationUtils.extract(buildings, e(Building.class).getApartments().get(-1).getResidents().get(-1).getAge());
 ````
 
 
@@ -106,7 +106,7 @@ There is additional function supported by Aggregation utils and it is `set`. The
 ```java
 List<Building> buildings = new ArrayList<Building>();
 //add some data here
-AggregationUtils.set(buildings, m(Building.class).getApartments().get(-1).getKithcen().setArea(30));
+AggregationUtils.set(buildings, e(Building.class).getApartments().get(-1).getKithcen().setArea(30));
 ````
 
 You set area of the kitchen is equals to 30 for every aparment in every building on your street.
