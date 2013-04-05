@@ -26,7 +26,7 @@ for(Building building: buildings){
     apartmentsCount+=building.getApartmetsCount();
 }
 ````
-Just add static import: `import static com.eugenez.utils.MethodMagic.m;`
+Just add static import: `import static org.eugenez.utils.MethodMagic.m;`
 
 And do instead:
 
