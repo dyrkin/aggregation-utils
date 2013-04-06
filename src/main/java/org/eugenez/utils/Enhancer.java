@@ -1,5 +1,6 @@
 package org.eugenez.utils;
 
+import net.sf.cglib.proxy.InterfaceMaker;
 import net.sf.cglib.proxy.MethodInterceptor;
 import net.sf.cglib.proxy.MethodProxy;
 import org.slf4j.Logger;
@@ -37,8 +38,8 @@ public class Enhancer {
                 e.setInterfaces(new Class[]{type, Parametrized.class});
             } else {
                 e.setSuperclass(type);
+                e.setInterfaces(new Class[]{Parametrized.class});
             }
-
         } else if (typeToWrap instanceof TypeVariable) {
             e.setSuperclass((methodEntry.getReturnType()));
         } else {

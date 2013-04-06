@@ -9,6 +9,7 @@ public class Building {
     private List<Apartment> apartments;
     private int apartmentsCount;
     private Dimensions dimensions;
+    private Generified<Integer, Double> generified;
 
     public Building() {
     }
@@ -35,5 +36,13 @@ public class Building {
 
     public void setDimensions(Dimensions dimensions) {
         this.dimensions = dimensions;
+    }
+
+    public Generified<Integer, Double> getGenerified() {
+        return generified;
+    }
+
+    public void setGenerified(Generified<Integer, Double> generified) {
+        this.generified = generified;
     }
 }

@@ -3,6 +3,7 @@ package org.eugenez.utils;
 
 import org.eugenez.utils.clazz.Apartment;
 import org.eugenez.utils.clazz.Building;
+import org.eugenez.utils.clazz.Generified;
 import org.eugenez.utils.clazz.Resident;
 import org.junit.Test;
 
@@ -128,6 +129,27 @@ public class EnhancerTest {
         assertEquals(0, fifthLevelMethodEntry.getArgs().length);
         assertEquals(Integer.TYPE, fifthLevelMethodEntry.getReturnType());
         assertNull(fifthLevelMethodEntry.getNextMethodEntry());
+    }
+
+    @Test
+    public void testWithGenerifiedClass(){
+        e(Building.class).getGenerified().gettValue();
+        MethodEntry methodEntry = getEntryFromTheBottomOfHierarchy(Enhancer.invokedMethodHierarchy.get());
+
+        assertNotNull(methodEntry);
+        assertNotNull(methodEntry.getMethod());
+        assertEquals("getGenerified", methodEntry.getMethod().getName());
+        assertEquals(0, methodEntry.getArgs().length);
+        assertEquals(Generified.class, methodEntry.getReturnType());
+
+        assertNotNull(methodEntry.getNextMethodEntry());
+        MethodEntry secondLevelMethodEntry = methodEntry.getNextMethodEntry();
+        assertNotNull(secondLevelMethodEntry);
+        assertNotNull(secondLevelMethodEntry.getMethod());
+        assertEquals("gettValue", secondLevelMethodEntry.getMethod().getName());
+        assertEquals(0, secondLevelMethodEntry.getArgs().length);
+        assertEquals(Integer.class, secondLevelMethodEntry.getReturnType());
+        assertNull(secondLevelMethodEntry.getNextMethodEntry());
     }
 
     private static MethodEntry getEntryFromTheBottomOfHierarchy(MethodEntry methodEntry) {
