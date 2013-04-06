@@ -53,7 +53,7 @@ Ok, to count all residents who live in the first apartment in every building on 
 ```java
 List<Building> buildings = new ArrayList<Building>();
 //add some data here
-Integer residentsCount = AggregationUtils.sum(buildings, e(Building.class).getApartments().get(**0**).getResidents().size());
+Integer residentsCount = AggregationUtils.sum(buildings, e(Building.class).getApartments().get(0).getResidents().size());
 ````
 
 **Nested collection magic**
