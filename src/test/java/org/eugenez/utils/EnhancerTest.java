@@ -1,6 +1,9 @@
 package org.eugenez.utils;
 
 
+import org.eugenez.utils.clazz.Apartment;
+import org.eugenez.utils.clazz.Building;
+import org.eugenez.utils.clazz.Resident;
 import org.junit.Test;
 
 import java.util.List;
@@ -134,81 +137,4 @@ public class EnhancerTest {
         return methodEntry;
     }
 
-    public static class Building {
-        private List<Apartment> apartments;
-        private int apartmentsCount;
-        private Dimensions dimensions;
-
-        public Building() {
-        }
-
-        public List<Apartment> getApartments() {
-            return apartments;
-        }
-
-        public void setApartments(List<Apartment> apartments) {
-            this.apartments = apartments;
-        }
-
-        public void setApartmentsCount(int apartmentsCount) {
-            this.apartmentsCount = apartmentsCount;
-        }
-
-        public int getApartmentsCount() {
-            return apartmentsCount;
-        }
-
-        public Dimensions getDimensions() {
-            return dimensions;
-        }
-
-        public void setDimensions(Dimensions dimensions) {
-            this.dimensions = dimensions;
-        }
-    }
-
-    public static class Apartment {
-        private List<Resident> residents;
-
-        public Apartment() {
-        }
-
-        public List<Resident> getResidents() {
-            return residents;
-        }
-
-        public void setResidents(List<Resident> residents) {
-            this.residents = residents;
-        }
-    }
-
-    public static class Resident {
-        private int age;
-
-        public Resident() {
-        }
-
-        public int getAge() {
-            return age;
-        }
-
-        public void setAge(int age) {
-            this.age = age;
-        }
-    }
-
-    public static class Dimensions {
-        private int area;
-
-        public Dimensions() {
-        }
-
-        public int getArea() {
-            return area;
-        }
-
-        public void setArea(int area) {
-            this.area = area;
-        }
-    }
 }
