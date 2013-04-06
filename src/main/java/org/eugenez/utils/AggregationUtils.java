@@ -21,9 +21,8 @@ public class AggregationUtils {
     /**
      * Calculate SUM of the values returned by bean method specified in dummy param
      *
-     * @param collection - collection with POJO objects
+     * @param collection - collection with bean of any type
      * @param dummy      - just for dummy call
-     * @param <?>        - collection with beans of type T
      * @param <Z>        - result type
      * @return - returns result of aggregation.
      * @throws AggregationException

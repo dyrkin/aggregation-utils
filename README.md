@@ -3,7 +3,7 @@
 
 **SUM**
 
-Aggregation utils used for collections and doesn't requires anonymous classes to specify method which will be used for aggregation.
+Aggregation utils used for collections and don't requires anonymous classes to specify method which will be used for aggregation.
 This is means that to count all apartments from all buildings on your street you don't need to do something like this:
 
 ```java
