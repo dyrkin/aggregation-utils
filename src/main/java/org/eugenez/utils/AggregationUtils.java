@@ -67,7 +67,7 @@ public class AggregationUtils {
         aggregate(collection, new Aggregator<Z>() {
             @Override
             public void add(Object value) {
-                //just do nothins
+                //just do nothing
             }
         }, methodEntry);
     }

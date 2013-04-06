@@ -17,7 +17,7 @@ public class Enhancer {
 
     private static final Logger log = LoggerFactory.getLogger(Enhancer.class);
 
-    public static ThreadLocal<MethodEntry> invokedMethodHierarchy = new ThreadLocal<MethodEntry>();
+    protected static ThreadLocal<MethodEntry> invokedMethodHierarchy = new ThreadLocal<MethodEntry>();
 
     public static <T> T e(Class<T> typeToWrap) {
         return e(typeToWrap, null);
@@ -94,7 +94,7 @@ public class Enhancer {
     }
 
     private static Class<?> getActualReturnType(Method method, Object object) {
-        if (object instanceof Parametrized) {
+        if (method.getReturnType().equals(Object.class) && object instanceof Parametrized) {
             return ((Parametrized) object).getCGLIBParametrizedType();
         }
         return method.getReturnType();
