@@ -32,6 +32,11 @@ public class AggregationUtils {
         return aggregateItem(collection, (Sum<Z>) SumFactory.createSumAggregator(getMethodReturnType(methodEntry)), methodEntry);
     }
 
+    public static <Z> Z sum(Collection<?> collection, Collection<Z> dummy) throws AggregationException {
+        MethodEntry methodEntry = getAndResetInvokedMethod();
+        return aggregateItem(collection, (Sum<Z>) SumFactory.createSumAggregator(getMethodReturnType(methodEntry)), methodEntry);
+    }
+
     public static <Z> Z min(Collection<?> collection, Z dummy) throws AggregationException {
         return null;
     }
@@ -58,6 +63,11 @@ public class AggregationUtils {
     }
 
     public static <Z> List<Z> extract(Collection<?> collection, Z dummy) throws AggregationException {
+        MethodEntry methodEntry = getAndResetInvokedMethod();
+        return aggregateList(collection, methodEntry);
+    }
+
+    public static <Z> List<Z> extract(Collection<?> collection, Collection<Z> dummy) throws AggregationException {
         MethodEntry methodEntry = getAndResetInvokedMethod();
         return aggregateList(collection, methodEntry);
     }
@@ -93,7 +103,11 @@ public class AggregationUtils {
             if (methodEntry.getNextMethodEntry() != null) {
                 hierarchyCall(potentialResult, methodEntry.getNextMethodEntry(), aggregator);
             } else {
-                aggregator.add(potentialResult);
+                if (potentialResult instanceof Collection) {
+                    aggregator.addAll((Collection) potentialResult);
+                } else {
+                    aggregator.add(potentialResult);
+                }
             }
         }
     }
@@ -102,10 +116,10 @@ public class AggregationUtils {
      * If get method of collection has index argument equals -1 then this means the
      * we should do hierarchical call for every element in this collection
      *
-     * @param element - any object
+     * @param element     - any object
      * @param methodEntry
      * @return true in case if element is collection, method called equals to "get",
-     * method "get" has one argument and it's value = -1
+     *         method "get" has one argument and it's value = -1
      */
     private static boolean isCollectionRequiresIteration(Object element, MethodEntry methodEntry) {
         return element instanceof Iterable && methodEntry.getMethod().getName().equals("get")

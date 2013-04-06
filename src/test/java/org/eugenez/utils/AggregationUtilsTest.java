@@ -287,6 +287,30 @@ public class AggregationUtilsTest {
     }
 
     @Test
+    public void testAggregateWhenLastElementIsList() throws AggregationException {
+
+        List<ClassWithCollection> list = new ArrayList<ClassWithCollection>() {{
+            add(new ClassWithCollection(new ClassWithCollection.CollectionElement(12),
+                    new ClassWithCollection.CollectionElement(12),
+                    new ClassWithCollection.CollectionElement(15)));
+            add(new ClassWithCollection(new ClassWithCollection.CollectionElement(13)));
+            add(new ClassWithCollection(new ClassWithCollection.CollectionElement(14)));
+        }};
+
+        List<ClassWithCollection.CollectionElement> resultList = AggregationUtils.extract(list, e(ClassWithCollection.class).getCollectionElements());
+
+        assertEquals(5, resultList.size());
+
+        Collections.sort(resultList);
+
+        assertEquals(12, resultList.get(0).getIntegerValue().intValue());
+        assertEquals(12, resultList.get(1).getIntegerValue().intValue());
+        assertEquals(13, resultList.get(2).getIntegerValue().intValue());
+        assertEquals(14, resultList.get(3).getIntegerValue().intValue());
+        assertEquals(15, resultList.get(4).getIntegerValue().intValue());
+    }
+
+    @Test
     public void testSinglethredCallSum3() throws AggregationException {
 
         List<ClassWithCollection> list = new ArrayList<ClassWithCollection>() {{
@@ -320,7 +344,7 @@ public class AggregationUtilsTest {
             this.collectionElements = collectionElements;
         }
 
-        public static class CollectionElement {
+        public static class CollectionElement implements Comparable<CollectionElement>{
             public Integer integerValue;
 
             public CollectionElement() {
@@ -332,6 +356,10 @@ public class AggregationUtilsTest {
 
             public Integer getIntegerValue() {
                 return integerValue;
+            }
+
+            public int compareTo(CollectionElement o) {
+                return getIntegerValue().compareTo(o.getIntegerValue());
             }
         }
     }

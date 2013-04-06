@@ -1,6 +1,7 @@
 package org.eugenez.utils.common;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -14,5 +15,9 @@ public abstract class Aggregator<T> {
         if (value != null) {
             values.add(value);
         }
+    }
+
+    public void addAll(Collection<T> collection){
+        values.addAll(collection);
     }
 }
