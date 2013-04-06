@@ -5,6 +5,8 @@ import org.eugenez.utils.common.Aggregator;
 import org.eugenez.utils.common.ItemAggregator;
 import org.eugenez.utils.common.ListAggregator;
 import org.eugenez.utils.exception.AggregationException;
+import org.eugenez.utils.minmax.MaxAggregator;
+import org.eugenez.utils.minmax.MinAggregator;
 import org.eugenez.utils.sum.Sum;
 import org.eugenez.utils.sum.SumFactory;
 
@@ -29,25 +31,27 @@ public class AggregationUtils {
      */
     public static <Z> Z sum(Collection<?> collection, Z dummy) throws AggregationException {
         MethodEntry methodEntry = getAndResetInvokedMethod();
-        return aggregateItem(collection, (Sum<Z>) SumFactory.createSumAggregator(getMethodReturnType(methodEntry)), methodEntry);
+        return aggregateItem(collection, (Sum<Z>) SumFactory.createAggregator(getMethodReturnType(methodEntry)), methodEntry);
     }
 
     public static <Z> Z sum(Collection<?> collection, Collection<Z> dummy) throws AggregationException {
         MethodEntry methodEntry = getAndResetInvokedMethod();
-        return aggregateItem(collection, (Sum<Z>) SumFactory.createSumAggregator(getMethodReturnType(methodEntry)), methodEntry);
+        return aggregateItem(collection, (Sum<Z>) SumFactory.createAggregator(getMethodReturnType(methodEntry)), methodEntry);
     }
 
-    public static <Z> Z min(Collection<?> collection, Z dummy) throws AggregationException {
-        return null;
+    public static <Z extends Comparable> Z min(Collection<?> collection, Z dummy) throws AggregationException {
+        MethodEntry methodEntry = getAndResetInvokedMethod();
+        return aggregateItem(collection, new MinAggregator<Z>(), methodEntry);
     }
 
-    public static <Z> Z max(Collection<?> collection, Z dummy) throws AggregationException {
-        return null;
+    public static <Z extends Comparable> Z max(Collection<?> collection, Z dummy) throws AggregationException {
+        MethodEntry methodEntry = getAndResetInvokedMethod();
+        return aggregateItem(collection, new MaxAggregator<Z>(), methodEntry);
     }
 
     public static <Z> Z avg(Collection<?> collection, Z dummy) throws AggregationException {
         MethodEntry methodEntry = getAndResetInvokedMethod();
-        return aggregateItem(collection, (Sum<Z>) AvgFactory.createAvgAggregator(getMethodReturnType(methodEntry)), methodEntry);
+        return aggregateItem(collection, (Sum<Z>) AvgFactory.createAggregator(getMethodReturnType(methodEntry)), methodEntry);
     }
 
     public static <Z> Z first(Collection<?> collection, Z dummy) throws AggregationException {
@@ -58,8 +62,14 @@ public class AggregationUtils {
         return null;
     }
 
-    public static <Z> Z set(Collection<?> collection, Z dummy) throws AggregationException {
-        return null;
+    public static <Z> void set(Collection<?> collection, Z dummy) throws AggregationException {
+        MethodEntry methodEntry = getAndResetInvokedMethod();
+        aggregate(collection, new Aggregator<Z>() {
+            @Override
+            public void add(Object value) {
+                //just do nothins
+            }
+        }, methodEntry);
     }
 
     public static <Z> List<Z> extract(Collection<?> collection, Z dummy) throws AggregationException {
@@ -95,7 +105,7 @@ public class AggregationUtils {
         }
     }
 
-    private static void hierarchyCall(Object element, MethodEntry methodEntry, Aggregator aggregator) throws IllegalAccessException, InvocationTargetException {
+    private static <Z> void hierarchyCall(Object element, MethodEntry methodEntry, Aggregator<Z> aggregator) throws IllegalAccessException, InvocationTargetException {
         if (isCollectionRequiresIteration(element, methodEntry)) {
             iterateCollection(element, methodEntry, aggregator);
         } else {
@@ -104,9 +114,9 @@ public class AggregationUtils {
                 hierarchyCall(potentialResult, methodEntry.getNextMethodEntry(), aggregator);
             } else {
                 if (potentialResult instanceof Collection) {
-                    aggregator.addAll((Collection) potentialResult);
+                    aggregator.addAll((Collection<Z>) potentialResult);
                 } else {
-                    aggregator.add(potentialResult);
+                    aggregator.add((Z) potentialResult);
                 }
             }
         }

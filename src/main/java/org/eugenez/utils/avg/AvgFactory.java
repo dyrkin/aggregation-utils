@@ -8,7 +8,7 @@ import org.eugenez.utils.sum.*;
  * @author eugene zadyra
  */
 public class AvgFactory {
-    public static <Z> ItemAggregator<Z> createAvgAggregator(Class<?> returnType) throws AggregationException {
+    public static <Z> ItemAggregator<Z> createAggregator(Class<?> returnType) throws AggregationException {
         if (returnType.equals(Integer.TYPE) || returnType.equals(Integer.class)) {
             return (Sum<Z>) new IntegerAvg();
         } else if (returnType.equals(Double.TYPE) || returnType.equals(Double.class)) {

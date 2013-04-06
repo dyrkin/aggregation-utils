@@ -7,7 +7,7 @@ import org.eugenez.utils.exception.AggregationException;
  * @author eugene zadyra
  */
 public class SumFactory {
-    public static <Z> Aggregator<Z> createSumAggregator(Class<?> returnType) throws AggregationException {
+    public static <Z> Aggregator<Z> createAggregator(Class<?> returnType) throws AggregationException {
         if (returnType.equals(Integer.TYPE) || returnType.equals(Integer.class)) {
             return (Sum<Z>) new IntegerSum();
         } else if (returnType.equals(Double.TYPE) || returnType.equals(Double.class)) {

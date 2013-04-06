@@ -115,11 +115,11 @@ The aggregation utils supported these functions:
 
 - `sum` - the sum of the return results from the specified method of the collection elements(supported datatypes: `Integer`, `Double`, `Float`, `String`)
 - `avg` - the avrage value of the return results from the specified method of the collection elements(supported datatypes: `Integer`, `Double`, `Float`)
-- `max` - the max value of the return results from the specified method of the collection elements(supported datatypes: `Integer`, `Double`, `Float`, `String`) **Not implemented yet**
-- `min` - the min value of the return results from the specified method of the collection elements(supported datatypes: `Integer`, `Double`, `Float`, `String`) **Not implemented yet**
+- `max` - the max value of the return results from the specified method of the collection elements(supported datatypes: **Any comparable**)
+- `min` - the min value of the return results from the specified method of the collection elements(supported datatypes: **Any comparable**)
 - `first` - the first value of the return results from the specified method of the collection elements(supported any datatype) **Not implemented yet**
 - `last` - the last value of the return results from the specified method of the collection elements(supported any datatype) **Not implemented yet**
 
 - `extract` - collection of specified method value (supported any datatype)
 
-- `set` - set the specified value for every element in collection (supported any datatype)
+- `set` - set the specified value for every element in collection
