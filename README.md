@@ -11,7 +11,7 @@ List<Building> buildings = new ArrayList<Building>();
 //add some data here
 Integer apartmentsCount = AggregationUtils.sum(buildings, new ValueGetter<Building, Integer>() {
     public Integer getValue(Building object) {
-         return object.getApartmetsCount();
+         return object.getApartmentsCount();
     }
 });
 ````
@@ -23,7 +23,7 @@ List<Building> buildings = new ArrayList<Building>();
 //add some data here
 Integer apartmentsCount = 0;
 for(Building building: buildings){
-    apartmentsCount+=building.getApartmetsCount();
+    apartmentsCount+=building.getApartmentsCount();
 }
 ````
 Just add static import: `import static org.eugenez.utils.Enhancer.e;`
@@ -33,7 +33,7 @@ And do instead:
 ```java
 List<Building> buildings = new ArrayList<Building>();
 //add some data here
-Integer apartmentsCount = AggregationUtils.sum(buildings, e(Building.class).getApartmetsCount());
+Integer apartmentsCount = AggregationUtils.sum(buildings, e(Building.class).getApartmentsCount());
 ````
 
 **Hierarchical calls**
