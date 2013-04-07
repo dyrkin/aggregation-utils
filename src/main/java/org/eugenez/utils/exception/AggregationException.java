@@ -3,7 +3,7 @@ package org.eugenez.utils.exception;
 /**
 * @author eugene zadyra
 */
-public class AggregationException extends Exception {
+public class AggregationException extends RuntimeException {
     public AggregationException(String message) {
         super(message);
     }

@@ -2,6 +2,7 @@ package org.eugenez.utils;
 
 import net.sf.cglib.proxy.MethodInterceptor;
 import net.sf.cglib.proxy.MethodProxy;
+import org.eugenez.utils.exception.EnhanceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sun.reflect.generics.repository.ClassRepository;
@@ -28,27 +29,33 @@ public class Enhancer {
     }
 
     private static <T> T enhance(Type typeToWrap, MethodEntry methodEntry) {
-        net.sf.cglib.proxy.Enhancer e = new net.sf.cglib.proxy.Enhancer();
-        Map<String, Class<?>> parameterizedTypeMap = null;
-        if (typeToWrap instanceof ParameterizedType) {
-            parameterizedTypeMap = prepareTypeMap(((ParameterizedType) typeToWrap));
-            Class<?> type = (Class) ((ParameterizedType) typeToWrap).getRawType();
-            if (type.isInterface()) {
-                e.setInterfaces(new Class[]{type, Parametrized.class});
+        try {
+            net.sf.cglib.proxy.Enhancer e = new net.sf.cglib.proxy.Enhancer();
+            Map<String, Class<?>> parameterizedTypeMap = null;
+            if (typeToWrap instanceof ParameterizedType) {
+                parameterizedTypeMap = prepareTypeMap(((ParameterizedType) typeToWrap));
+                Class<?> type = (Class) ((ParameterizedType) typeToWrap).getRawType();
+                if (type.isInterface()) {
+                    e.setInterfaces(new Class[]{type, Parametrized.class});
+                } else {
+                    e.setSuperclass(type);
+                    e.setInterfaces(new Class[]{Parametrized.class});
+                }
+            } else if (typeToWrap instanceof TypeVariable) {
+                e.setSuperclass((methodEntry.getReturnType()));
             } else {
-                e.setSuperclass(type);
-                e.setInterfaces(new Class[]{Parametrized.class});
+                e.setSuperclass((Class<?>) typeToWrap);
             }
-        } else if (typeToWrap instanceof TypeVariable) {
-            e.setSuperclass((methodEntry.getReturnType()));
-        } else {
-            e.setSuperclass((Class<?>) typeToWrap);
+            e.setCallback(new Interceptor(methodEntry, parameterizedTypeMap));
+            return (T) e.create();
+        } catch (NoSuchFieldException e) {
+            throw new EnhanceException(e);
+        } catch (IllegalAccessException e) {
+            throw new EnhanceException(e);
         }
-        e.setCallback(new Interceptor(methodEntry, parameterizedTypeMap));
-        return (T) e.create();
     }
 
-    private static Map<String, Class<?>> prepareTypeMap(ParameterizedType typeToWrap) {
+    private static Map<String, Class<?>> prepareTypeMap(ParameterizedType typeToWrap) throws NoSuchFieldException, IllegalAccessException {
         Type[] types = typeToWrap.getActualTypeArguments();
         TypeVariable[] typeVariables = getGenericInfo(((Class<?>) typeToWrap.getRawType())).getTypeParameters();
         Map<String, Class<?>> typeMap = new HashMap<String, Class<?>>();
@@ -119,16 +126,9 @@ public class Enhancer {
         Map<String, Class<?>> getCGLIBParametrizedTypeMap();
     }
 
-    public static ClassRepository getGenericInfo(Class<?> rawType) {
-        try {
-            Field declaredField = Class.class.getDeclaredField("genericInfo");
-            declaredField.setAccessible(true);
-            return (ClassRepository) declaredField.get(rawType);
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        } catch (NoSuchFieldException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        }
-        return null;
+    public static ClassRepository getGenericInfo(Class<?> rawType) throws NoSuchFieldException, IllegalAccessException {
+        Field declaredField = Class.class.getDeclaredField("genericInfo");
+        declaredField.setAccessible(true);
+        return (ClassRepository) declaredField.get(rawType);
     }
 }
