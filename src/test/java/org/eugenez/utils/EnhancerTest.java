@@ -132,7 +132,7 @@ public class EnhancerTest {
     }
 
     @Test
-    public void testWithGenerifiedClass(){
+    public void testWithGenerifiedClass1(){
         e(Building.class).getGenerified().gettValue();
         MethodEntry methodEntry = getEntryFromTheBottomOfHierarchy(Enhancer.invokedMethodHierarchy.get());
 
@@ -149,6 +149,27 @@ public class EnhancerTest {
         assertEquals("gettValue", secondLevelMethodEntry.getMethod().getName());
         assertEquals(0, secondLevelMethodEntry.getArgs().length);
         assertEquals(Integer.class, secondLevelMethodEntry.getReturnType());
+        assertNull(secondLevelMethodEntry.getNextMethodEntry());
+    }
+
+    @Test
+    public void testWithGenerifiedClass2(){
+        e(Building.class).getGenerified().getzValue();
+        MethodEntry methodEntry = getEntryFromTheBottomOfHierarchy(Enhancer.invokedMethodHierarchy.get());
+
+        assertNotNull(methodEntry);
+        assertNotNull(methodEntry.getMethod());
+        assertEquals("getGenerified", methodEntry.getMethod().getName());
+        assertEquals(0, methodEntry.getArgs().length);
+        assertEquals(Generified.class, methodEntry.getReturnType());
+
+        assertNotNull(methodEntry.getNextMethodEntry());
+        MethodEntry secondLevelMethodEntry = methodEntry.getNextMethodEntry();
+        assertNotNull(secondLevelMethodEntry);
+        assertNotNull(secondLevelMethodEntry.getMethod());
+        assertEquals("getzValue", secondLevelMethodEntry.getMethod().getName());
+        assertEquals(0, secondLevelMethodEntry.getArgs().length);
+        assertEquals(Double.class, secondLevelMethodEntry.getReturnType());
         assertNull(secondLevelMethodEntry.getNextMethodEntry());
     }
 

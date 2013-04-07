@@ -1,15 +1,14 @@
 package org.eugenez.utils;
 
-import net.sf.cglib.proxy.InterfaceMaker;
 import net.sf.cglib.proxy.MethodInterceptor;
 import net.sf.cglib.proxy.MethodProxy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import sun.reflect.generics.repository.ClassRepository;
 
-import java.lang.reflect.Method;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.lang.reflect.TypeVariable;
+import java.lang.reflect.*;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author eugene zadyra
@@ -30,9 +29,9 @@ public class Enhancer {
 
     private static <T> T enhance(Type typeToWrap, MethodEntry methodEntry) {
         net.sf.cglib.proxy.Enhancer e = new net.sf.cglib.proxy.Enhancer();
-        Class<?> parameterizedType = null;
+        Map<String, Class<?>> parameterizedTypeMap = null;
         if (typeToWrap instanceof ParameterizedType) {
-            parameterizedType = (Class<?>) ((ParameterizedType) typeToWrap).getActualTypeArguments()[0];
+            parameterizedTypeMap = prepareTypeMap(((ParameterizedType) typeToWrap));
             Class<?> type = (Class) ((ParameterizedType) typeToWrap).getRawType();
             if (type.isInterface()) {
                 e.setInterfaces(new Class[]{type, Parametrized.class});
@@ -45,19 +44,29 @@ public class Enhancer {
         } else {
             e.setSuperclass((Class<?>) typeToWrap);
         }
-        e.setCallback(new Interceptor(methodEntry, parameterizedType));
+        e.setCallback(new Interceptor(methodEntry, parameterizedTypeMap));
         return (T) e.create();
+    }
+
+    private static Map<String, Class<?>> prepareTypeMap(ParameterizedType typeToWrap) {
+        Type[] types = typeToWrap.getActualTypeArguments();
+        TypeVariable[] typeVariables = getGenericInfo(((Class<?>) typeToWrap.getRawType())).getTypeParameters();
+        Map<String, Class<?>> typeMap = new HashMap<String, Class<?>>();
+        for (int i = 0; i < types.length; i++) {
+            typeMap.put(typeVariables[i].getName(), (Class) types[i]);
+        }
+        return typeMap;
     }
 
     private static class Interceptor implements MethodInterceptor {
 
         private MethodEntry previousMethodEntry;
 
-        private Class<?> parametrizedType;
+        private Map<String, Class<?>> parameterizedTypeMap;
 
-        private Interceptor(MethodEntry previousMethodEntry, Class<?> parametrizedType) {
+        private Interceptor(MethodEntry previousMethodEntry, Map<String, Class<?>> parameterizedTypeMap) {
             this.previousMethodEntry = previousMethodEntry;
-            this.parametrizedType = parametrizedType;
+            this.parameterizedTypeMap = parameterizedTypeMap;
         }
 
         public Object intercept(Object object, Method method, Object[] args, MethodProxy proxy) throws Throwable {
@@ -65,8 +74,8 @@ public class Enhancer {
             if (method.getName().equals("finalize")) {
                 return proxy.invokeSuper(object, args);
             }
-            if (method.getName().equals("getCGLIBParametrizedType")) {
-                return parametrizedType;
+            if (method.getName().equals("getCGLIBParametrizedTypeMap")) {
+                return parameterizedTypeMap;
             }
             MethodEntry newMethodEntry = createMethodEntry(previousMethodEntry, object, method, args);
             invokedMethodHierarchy.set(newMethodEntry);
@@ -96,12 +105,30 @@ public class Enhancer {
 
     private static Class<?> getActualReturnType(Method method, Object object) {
         if (method.getReturnType().equals(Object.class) && object instanceof Parametrized) {
-            return ((Parametrized) object).getCGLIBParametrizedType();
+            return getGenericClassType(((Parametrized) object).getCGLIBParametrizedTypeMap(), method);
         }
         return method.getReturnType();
     }
 
+    private static Class<?> getGenericClassType(Map<String, Class<?>> parametrizedTypeMap, Method method) {
+        TypeVariable genericReturnTypeSignature = (TypeVariable) method.getGenericReturnType();
+        return parametrizedTypeMap.get(genericReturnTypeSignature.getName());
+    }
+
     public interface Parametrized {
-        Class<?> getCGLIBParametrizedType();
+        Map<String, Class<?>> getCGLIBParametrizedTypeMap();
+    }
+
+    public static ClassRepository getGenericInfo(Class<?> rawType) {
+        try {
+            Field declaredField = Class.class.getDeclaredField("genericInfo");
+            declaredField.setAccessible(true);
+            return (ClassRepository) declaredField.get(rawType);
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        } catch (NoSuchFieldException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+        return null;
     }
 }
